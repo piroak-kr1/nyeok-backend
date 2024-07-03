@@ -5,7 +5,7 @@ app = FastAPI()
 
 @app.get("/")
 async def hello_world() -> str:
-    return "Hello, World!"
+    return "Hello, world!"
 
 
 @app.get("/echo")
@@ -13,4 +13,5 @@ async def echo(message: str | None = None) -> str:
     if message is None:
         return f"Test echo with /echo?message=<message>"
     else:
-        return f"echo: {message}"
+        print(f"Received message: {message}")
+        return f"{message}"
