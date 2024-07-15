@@ -1,6 +1,14 @@
 {
   "python.analysis.autoSearchPaths": false,
   "python.analysis.extraPaths": [
-    "app"
-  ]
+    "app",
+    "/home/wsl/Develop-WSL/nyeok-backend/env/lib/python3.12/site-packages",
+  ],
+  "python.analysis.packageIndexDepths": [
+    {
+      "name": "sqlalchemy",
+      "depth": 2,
+      "includeAllSymbols": false
+    }
+  ],
 }
