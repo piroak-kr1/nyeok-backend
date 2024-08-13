@@ -7,13 +7,11 @@ WORKDIR /APP
 COPY ./app/. /APP
 
 # Install packages specified in requirements.txt
-RUN pip install --root-user-action=ignore -r requirements.txt
+# RUN pip install --root-user-action=ignore -r requirements.txt
+# TODO: use poetry instead
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
-
-# Define environment variable
-# ENV NAME World
 
 # Run app.py when the container launches
 CMD ["fastapi", "dev", "--port", "8000", "--host", "0.0.0.0"]
