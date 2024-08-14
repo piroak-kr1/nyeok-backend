@@ -1,17 +1,17 @@
-from fastapi import FastAPI, Response
+from fastapi import APIRouter, FastAPI, Response
 from pydantic import BaseModel
 from pydantic_extra_types.coordinate import Coordinate
 from .network import routes_api
 
-app = FastAPI()
+api_router = APIRouter(prefix="/api")
 
 
-@app.get("/")
+@api_router.get("/")
 async def hello_world() -> str:
     return "Hello, world!"
 
 
-@app.get("/echo")
+@api_router.get("/echo")
 async def echo(message: str | None = None) -> str:
     if message is None:
         return f"Test echo with /echo?message=<message>"
@@ -20,7 +20,7 @@ async def echo(message: str | None = None) -> str:
         return f"{message}"
 
 
-@app.get("/compute_routes_sample")
+@api_router.get("/compute_routes_sample")
 async def compute_routes_sample() -> Response:
     resultJson: str = await routes_api.sample_compute_routes()
     return Response(content=resultJson, media_type="application/json")
@@ -31,7 +31,7 @@ class RouteRequest(BaseModel):
     destination: Coordinate
 
 
-@app.post("/compute_routes")
+@api_router.post("/compute_routes")
 async def compute_routes(request: RouteRequest) -> Response:
     origin: Coordinate = request.origin
     destination: Coordinate = request.destination
@@ -39,3 +39,7 @@ async def compute_routes(request: RouteRequest) -> Response:
         origin=origin, destination=destination
     )
     return Response(content=resultJson, media_type="application/json")
+
+
+app = FastAPI()
+app.include_router(api_router)
