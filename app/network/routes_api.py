@@ -1,9 +1,10 @@
+from typing import MutableSequence
 from google.maps import routing_v2
+from google.maps.routing_v2 import RouteLegStep
 from google.type.latlng_pb2 import LatLng
-from google.protobuf.field_mask_pb2 import FieldMask
 
 
-async def sample_compute_routes():
+async def sample_compute_routes() -> MutableSequence[RouteLegStep]:
     # Create a client
     client = routing_v2.RoutesAsyncClient()
 
@@ -27,8 +28,7 @@ async def sample_compute_routes():
         request=request, metadata=[("x-goog-fieldmask", "*")]
     )
 
-    # Handle the response
-    print(response)
+    return response.routes[0].legs[0].steps
 
 
 if __name__ == "__main__":

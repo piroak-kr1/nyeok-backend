@@ -6,9 +6,14 @@
     {
       "label": "Run fastapi",
       "type": "shell",
-      "command": "env/bin/fastapi",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "command": "poetry",
       "args": [
-        "dev",
+        "run",
+        "fastapi",
+        "dev"
       ],
       "group": {
         "kind": "test",
