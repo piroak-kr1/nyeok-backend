@@ -1,7 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from .network import routes_api
-from typing import MutableSequence
-from google.maps.routing_v2 import RouteLegStep
 
 app = FastAPI()
 
@@ -20,7 +18,7 @@ async def echo(message: str | None = None) -> str:
         return f"{message}"
 
 
-# @app.get("/compute_routes")
-# async def compute_routes() -> MutableSequence[RouteLegStep]:
-#     stepsList = await routes_api.sample_compute_routes()
-#     return stepsList
+@app.get("/compute_routes_sample")
+async def compute_routes_sample() -> Response:
+    resultJson: str = await routes_api.sample_compute_routes()
+    return Response(content=resultJson, media_type="application/json")

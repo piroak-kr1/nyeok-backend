@@ -1,10 +1,9 @@
-from typing import MutableSequence
 from google.maps import routing_v2
-from google.maps.routing_v2 import RouteLegStep
 from google.type.latlng_pb2 import LatLng
+from google.protobuf.json_format import MessageToJson
 
 
-async def sample_compute_routes() -> MutableSequence[RouteLegStep]:
+async def sample_compute_routes() -> str:
     # Create a client
     client = routing_v2.RoutesAsyncClient()
 
@@ -28,10 +27,5 @@ async def sample_compute_routes() -> MutableSequence[RouteLegStep]:
         request=request, metadata=[("x-goog-fieldmask", "*")]
     )
 
-    return response.routes[0].legs[0].steps
-
-
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(sample_compute_routes())
+    resultJson = MessageToJson(response._pb)
+    return resultJson
