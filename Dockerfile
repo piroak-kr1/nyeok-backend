@@ -9,9 +9,10 @@ ENV POETRY_NO_INTERACTION=1 \
   POETRY_CACHE_DIR=/tmp/poetry_cache
 
 COPY pyproject.toml poetry.lock README.md /APP/
-
 WORKDIR /APP
 
+RUN apt update
+RUN apt install python3-dev libpq-dev gcc -y  # Install psycopg2 dependencies
 RUN poetry install && rm -rf $POETRY_CACHE_DIR
 
 # 2. Copy codes: Local ./app to Container /APP
