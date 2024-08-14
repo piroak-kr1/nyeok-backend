@@ -42,4 +42,11 @@ async def compute_routes(request: RouteRequest) -> Response:
 
 
 app = FastAPI()
+
+
+@app.get("/readiness")
+async def readiness():
+    return {"status": "ok"}
+
+
 app.include_router(api_router)
