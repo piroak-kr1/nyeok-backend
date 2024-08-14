@@ -12,6 +12,7 @@ sqlalchemy = "^2.0.32"
 psycopg2 = "^2.9.9"
 google-maps-routing = "^0.6.10"
 grpcio = "1.64.*"                                         # 1.65.2 version caused error BIOS data file
+pydantic-extra-types = "^2.9.0"
 
 
 [build-system]
