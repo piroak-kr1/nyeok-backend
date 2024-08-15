@@ -1,17 +1,19 @@
-from fastapi import APIRouter, FastAPI, Response
+import logging
+from fastapi import FastAPI, Response
 from pydantic import BaseModel
 from pydantic_extra_types.coordinate import Coordinate
 from .network import routes_api
 
-api_router = APIRouter(prefix="/api")
+
+app = FastAPI()
 
 
-@api_router.get("/")
+@app.get("/")
 async def hello_world() -> str:
     return "Hello, world!"
 
 
-@api_router.get("/echo")
+@app.get("/echo")
 async def echo(message: str | None = None) -> str:
     if message is None:
         return f"Test echo with /echo?message=<message>"
@@ -20,7 +22,7 @@ async def echo(message: str | None = None) -> str:
         return f"{message}"
 
 
-@api_router.get("/compute_routes_sample")
+@app.get("/compute_routes_sample")
 async def compute_routes_sample() -> Response:
     resultJson: str = await routes_api.sample_compute_routes()
     return Response(content=resultJson, media_type="application/json")
@@ -31,7 +33,7 @@ class RouteRequest(BaseModel):
     destination: Coordinate
 
 
-@api_router.post("/compute_routes")
+@app.post("/compute_routes")
 async def compute_routes(request: RouteRequest) -> Response:
     origin: Coordinate = request.origin
     destination: Coordinate = request.destination
@@ -41,12 +43,15 @@ async def compute_routes(request: RouteRequest) -> Response:
     return Response(content=resultJson, media_type="application/json")
 
 
-app = FastAPI()
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.getMessage().find('"GET /readiness HTTP/1.1" 200') == -1
+
+
+# Filter out /readiness
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
 
 @app.get("/readiness")
 async def readiness():
     return {"status": "ok"}
-
-
-app.include_router(api_router)
