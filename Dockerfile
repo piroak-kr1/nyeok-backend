@@ -22,4 +22,4 @@ COPY ./app /APP
 EXPOSE 8000
 
 # Run app.py when the container launches
-CMD ["poetry", "run", "fastapi", "dev", "--port", "8000", "--host", "0.0.0.0"]
+CMD ["poetry", "run", "bash", "-c", "\"cd app && fastapi --port 8000 --host 0.0.0.0\""]
