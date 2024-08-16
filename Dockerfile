@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-WORKDIR /APP
+WORKDIR /backend
 
 # 1. Install irrelevant dependencies
 RUN pip install poetry==1.8.3
@@ -22,11 +22,11 @@ ENV POETRY_NO_INTERACTION=1 \
 RUN --mount=type=cache,target=/root/.cache poetry config cache-dir /root/.cache && \
   poetry install && rm -rf $POETRY_CACHE_DIR
 
-# 3. Local ./app codes to Container /APP
-COPY ./app .
+# 3. Local ./app codes to Container /backend/app
+COPY ./app ./app
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
-# Run app.py when the container launches
-CMD ["poetry", "run", "bash", "-c", "\"fastapi --port 8000 --host 0.0.0.0\""]
+# Move to /backend/app and run /backend/app/main.py
+CMD ["poetry", "run", "bash", "-c", "cd app && fastapi dev --port 8000 --host 0.0.0.0"]
