@@ -1,7 +1,9 @@
 from google.maps import routing_v2
 from google.type.latlng_pb2 import LatLng
 from google.protobuf.json_format import MessageToJson
+from google.api_core.client_options import ClientOptions
 from pydantic_extra_types.coordinate import Coordinate
+from env import env
 
 
 async def sample_compute_routes() -> str:
@@ -13,7 +15,9 @@ async def sample_compute_routes() -> str:
 
 async def compute_routes(origin: Coordinate, destination: Coordinate) -> str:
     # Create a client
-    client = routing_v2.RoutesAsyncClient()
+    client = routing_v2.RoutesAsyncClient(
+        client_options=ClientOptions(api_key=env.GCP_API_KEY)
+    )
 
     # Initialize request argument(s)
     request = routing_v2.ComputeRoutesRequest(
@@ -34,7 +38,8 @@ async def compute_routes(origin: Coordinate, destination: Coordinate) -> str:
 
     # Make the request
     response = await client.compute_routes(
-        request=request, metadata=[("x-goog-fieldmask", "*")]
+        request=request,
+        metadata=[("x-goog-fieldmask", "*")],
     )
 
     resultJson = MessageToJson(response._pb)

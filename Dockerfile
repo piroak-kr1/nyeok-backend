@@ -1,25 +1,32 @@
 FROM python:3.12-slim
 
+WORKDIR /APP
+
+# 1. Install irrelevant dependencies
 RUN pip install poetry==1.8.3
 
-# 1. install dependencies
+RUN \
+  --mount=type=cache,target=/var/cache/apt \
+  apt update && \
+  # Install psycopg2 dependencies
+  apt install -y python3-dev libpq-dev gcc -y
+
+# 2. Install poetry's dependencies (Always cache break)
+COPY pyproject.toml poetry.lock README.md ./
+
 ENV POETRY_NO_INTERACTION=1 \
   POETRY_VIRTUALENVS_IN_PROJECT=1 \
   POETRY_VIRTUALENVS_CREATE=1 \
   POETRY_CACHE_DIR=/tmp/poetry_cache
 
-COPY pyproject.toml poetry.lock README.md /APP/
-WORKDIR /APP
+RUN --mount=type=cache,target=/root/.cache poetry config cache-dir /root/.cache && \
+  poetry install && rm -rf $POETRY_CACHE_DIR
 
-RUN apt update
-RUN apt install python3-dev libpq-dev gcc -y  # Install psycopg2 dependencies
-RUN poetry install && rm -rf $POETRY_CACHE_DIR
-
-# 2. Copy codes: Local ./app to Container /APP
-COPY ./app /APP
+# 3. Local ./app codes to Container /APP
+COPY ./app .
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
 # Run app.py when the container launches
-CMD ["poetry", "run", "bash", "-c", "\"cd app && fastapi --port 8000 --host 0.0.0.0\""]
+CMD ["poetry", "run", "bash", "-c", "\"fastapi --port 8000 --host 0.0.0.0\""]
