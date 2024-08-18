@@ -1,3 +1,4 @@
+# type: ignore
 from google.maps import routing_v2
 from google.type.latlng_pb2 import LatLng
 from google.protobuf.json_format import MessageToJson

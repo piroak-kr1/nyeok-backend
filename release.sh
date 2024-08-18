@@ -16,5 +16,5 @@ else
     exit 1
 fi
 
-docker build --tag kimkun07/nyeok-backend:$(poetry version --short) .
-docker push kimkun07/nyeok-backend:$(poetry version --short)
+docker build --tag kimkun07/nyeok-backend:$(poetry version) .
+docker push kimkun07/nyeok-backend:$(poetry version)
