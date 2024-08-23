@@ -1,4 +1,4 @@
-from tourapi.AreaCodeAPI import AreaCodeAPI, Params
+from .AreaCodeAPI import AreaCodeAPI, Params
 
 
 def generate_areacode_py():

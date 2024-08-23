@@ -1,6 +1,5 @@
 from typing import Literal, Optional
-from tourapi.AreaCode import AreaCode
-from tourapi.BaseAPI import BaseAPI, BaseParams, BaseItem
+from .BaseAPI import BaseAPI, BaseParams, BaseItem
 
 
 class Params(BaseParams):
@@ -42,20 +41,3 @@ class Item(BaseItem):
 AreaBasedListAPI = BaseAPI(
     "http://apis.data.go.kr/B551011/KorService1/areaBasedList1", Params, Item
 )
-
-
-def main():
-    params = Params(
-        numOfRows=10,
-        pageNo=1,
-        areaCode=int(AreaCode.서울),
-        sigunguCode=AreaCode.서울.마포구,
-        contentTypeId=None,
-        arrange="O",
-        listYN=None,
-        cat1=None,
-        cat2=None,
-        cat3=None,
-    )
-    for item in AreaBasedListAPI.get_items_all(params):
-        print(f"{item.title=}")

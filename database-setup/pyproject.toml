@@ -11,6 +11,9 @@ readme = "README.md"
 python = "^3.12"
 database-core = { path = "../database-core", develop = true }
 alembic = "^1.13.2"
+pydantic = "^2.8.2"
+requests = "^2.32.3"
+python-dotenv = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]

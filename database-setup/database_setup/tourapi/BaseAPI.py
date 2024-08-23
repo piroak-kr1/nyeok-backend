@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from pydantic_core import from_json
 import requests
 import urllib.parse
-from env import env
-from tourapi.types import Body, ResponseRoot
+from ..env import env
+from .types import Body, ResponseRoot
 
 
 class BaseParams(BaseModel):

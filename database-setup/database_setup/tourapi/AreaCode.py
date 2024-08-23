@@ -1,4 +1,4 @@
-from utils.class_with_int import class_with_int
+from ..utils.class_with_int import class_with_int
 
 
 class 서울Code:

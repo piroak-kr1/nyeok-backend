@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
-from tourapi.BaseAPI import BaseAPI, BaseItem, BaseParams
+from .BaseAPI import BaseAPI, BaseItem, BaseParams
 
 
 class Params(BaseParams):
