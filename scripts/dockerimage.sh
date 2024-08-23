@@ -1,3 +1,5 @@
+# NOTE: script may be broken.
+
 # Argument: major, minor, patch
 
 prev_version=$(poetry version)

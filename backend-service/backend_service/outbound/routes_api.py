@@ -4,7 +4,7 @@ from google.type.latlng_pb2 import LatLng
 from google.protobuf.json_format import MessageToJson
 from google.api_core.client_options import ClientOptions
 from pydantic_extra_types.coordinate import Coordinate
-from env import env
+from ..env import env
 
 
 async def sample_compute_routes() -> str:

@@ -1,13 +1,8 @@
-import os, sys
-
-# Ensure import from source code root directory. ex) `from main`
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import logging
 from fastapi import FastAPI, Response
 from pydantic import BaseModel
 from pydantic_extra_types.coordinate import Coordinate
-from network import routes_api
+from .outbound import routes_api
 
 
 app = FastAPI()

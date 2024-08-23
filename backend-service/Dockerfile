@@ -1,3 +1,5 @@
+# NOTE: Dockerfile may be broken.
+
 FROM python:3.12-slim
 
 WORKDIR /backend

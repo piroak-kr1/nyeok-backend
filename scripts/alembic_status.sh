@@ -12,6 +12,8 @@ echo ""
 echo "== Running Alembic Check =="
 "$runpoetry" database-setup/database_setup alembic check 2>/dev/null
 
+# NOTE: If nothing is displayed, the output is likely being printed to stderr.
+
 # NOTE: Ways to delete revision
 # delete a file in alembic/versions
 # DELETE FROM alembic_version where version_num='61b069ea7b7c'; (If it is committed to DB)
