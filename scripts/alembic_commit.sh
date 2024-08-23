@@ -15,5 +15,9 @@ for arg in "$@"; do
     revision_message="$revision_message $arg"
 done
 
-"$runpoetry" alembic revision --autogenerate -m "$revision_message"
-"$runpoetry" alembic upgrade head
+"$runpoetry" database-setup/database_setup alembic revision --autogenerate -m "$revision_message"
+"$runpoetry" database-setup/database_setup alembic upgrade head
+
+# NOTE: How to delete revision
+# delete a file in alembic/versions
+# DELETE FROM alembic_version where version_num='61b069ea7b7c'; (If it is committed to DB)
