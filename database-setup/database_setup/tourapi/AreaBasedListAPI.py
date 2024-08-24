@@ -20,8 +20,8 @@ class Item(BaseItem):
     title: str
     firstimage: str  # 원본 대표이미지(약 500 * 333)
     firstimage2: str  # 썸네일 이미지 url(약 150 * 100)
-    mapx: float
-    mapy: float
+    mapx: float  # Longitude
+    mapy: float  # Latitude
     contentid: int
     contenttypeid: int
     addr1: str
