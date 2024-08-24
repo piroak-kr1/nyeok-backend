@@ -10,6 +10,11 @@
       "name": "sqlalchemy",
       "depth": 2,
       "includeAllSymbols": false
+    },
+    {
+      "name": "fastapi",
+      "depth": 2,
+      "includeAllSymbols": false
     }
   ],
 }

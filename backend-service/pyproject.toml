@@ -8,9 +8,11 @@ package-mode = false                        # Poetry only used for dependency ma
 
 [tool.poetry.dependencies]
 python = "^3.12"
+database-core = { path = "../database-core", develop = true }
 fastapi = { extras = ["standard"], version = "^0.112.0" }
 google-maps-routing = "^0.6.10"
-grpcio = "1.64.*"                                         # 1.65.2 version caused error BIOS data file
+grpcio = "1.64.*"                                             # 1.65.2 version caused error BIOS data file
+pydantic = "^2.8.2"
 pydantic-extra-types = "^2.9.0"
 python-dotenv = "^1.0.1"
 
