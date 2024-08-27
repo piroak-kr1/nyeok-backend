@@ -10,8 +10,14 @@ class Env:
     DATAKR_API_KEY: str
 
     def __init__(self) -> None:
+        # Load files in same directory with this file
+        original_cwd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         self.read_files_to_os()
         self.set_env_from_os()
+
+        os.chdir(original_cwd)
 
     def read_files_to_os(self) -> None:
         # load_dotenv(".env.prod")
