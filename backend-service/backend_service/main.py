@@ -5,7 +5,7 @@ from geoalchemy2 import Geometry
 from pydantic import BaseModel
 from pydantic_extra_types.coordinate import Coordinate
 from sqlalchemy import Row, Select, select, cast
-from geoalchemy2.functions import ST_X, ST_Y
+from geoalchemy2.functions import ST_X, ST_Y, ST_Distance
 from sqlalchemy.orm import Session
 
 
@@ -40,8 +40,8 @@ async def echo(message: str | None = None) -> str:
         return f"{message}"
 
 
-@app.get("/places_sample", response_model=Place)
-def places_sample(session: Session = Depends(db.get_session_yield)):
+@app.get("/places_sample")
+def places_sample(session: Session = Depends(db.get_session_yield)) -> Place:
     # cast Geography to Geometry (ST_X, ST_Y only works with Geometry)
     statement: Select[tuple[DBPlace, float, float]] = select(
         DBPlace,
@@ -57,6 +57,49 @@ def places_sample(session: Session = Depends(db.get_session_yield)):
 
     dbPlace, longitude, latitude = single_record
     return Place.from_sqlalchemy_model(dbPlace, longitude, latitude)
+
+
+class PlaceResult(BaseModel):
+    contentid: int
+    title: str
+    firstimage2: str
+    coordinate: Coordinate
+    distance_meter: float
+
+
+@app.post("/places_closest")
+def places_closest(
+    user_coordinate: Coordinate, session: Session = Depends(db.get_session_yield)
+) -> PlaceResult:
+    statement: Select[tuple[int, str, str, float, float, float]] = select(
+        DBPlace.contentid,
+        DBPlace.title,
+        DBPlace.firstimage2,
+        ST_X(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
+        ST_Y(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
+        ST_Distance(
+            DBPlace.coordinate,
+            f"POINT({user_coordinate.longitude} {user_coordinate.latitude})",
+            use_spheroid=True,
+        ).label(
+            "distance"
+        ),  # type: ignore
+    ).order_by("distance")
+
+    single_record: Row[tuple[int, str, str, float, float, float]] | None = (
+        session.execute(statement).first()
+    )
+    if single_record is None:
+        raise ValueError("No records found")
+
+    contentid, title, firstimage2, longitude, latitude, distance = single_record
+    return PlaceResult(
+        contentid=contentid,
+        title=title,
+        firstimage2=firstimage2,
+        coordinate=Coordinate(longitude=longitude, latitude=latitude),
+        distance_meter=distance,
+    )
 
 
 @app.get("/compute_routes_sample")
