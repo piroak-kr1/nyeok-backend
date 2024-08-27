@@ -1,4 +1,6 @@
 import logging
+import random
+from typing import Sequence
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from geoalchemy2 import Geometry
@@ -40,8 +42,8 @@ async def echo(message: str | None = None) -> str:
         return f"{message}"
 
 
-@app.get("/places_sample")
-def places_sample(session: Session = Depends(db.get_session_yield)) -> Place:
+@app.get("/place_sample")
+def place_sample(session: Session = Depends(db.get_session_yield)) -> Place:
     # cast Geography to Geometry (ST_X, ST_Y only works with Geometry)
     statement: Select[tuple[DBPlace, float, float]] = select(
         DBPlace,
@@ -67,8 +69,12 @@ class PlaceResult(BaseModel):
     distance_meter: float
 
 
-@app.post("/places_closest")
-def places_closest(
+class PlacesResult(BaseModel):
+    places: list[PlaceResult]
+
+
+@app.post("/place_closest")
+def place_closest(
     user_coordinate: Coordinate, session: Session = Depends(db.get_session_yield)
 ) -> PlaceResult:
     statement: Select[tuple[int, str, str, float, float, float]] = select(
@@ -100,6 +106,49 @@ def places_closest(
         coordinate=Coordinate(longitude=longitude, latitude=latitude),
         distance_meter=distance,
     )
+
+
+@app.post("/places_random")
+def places_random(
+    user_coordinate: Coordinate, session: Session = Depends(db.get_session_yield)
+) -> PlacesResult:
+    statement: Select[tuple[int, str, str, float, float, float]] = select(
+        DBPlace.contentid,
+        DBPlace.title,
+        DBPlace.firstimage2,
+        ST_X(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
+        ST_Y(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
+        ST_Distance(
+            DBPlace.coordinate,
+            f"POINT({user_coordinate.longitude} {user_coordinate.latitude})",
+            use_spheroid=True,
+        ).label(
+            "distance"
+        ),  # type: ignore
+    )
+
+    all_records: Sequence[Row[tuple[int, str, str, float, float, float]]] = (
+        session.execute(statement).all()
+    )
+
+    if not len(all_records) >= 3:
+        raise ValueError("Records less than 3")
+
+    three_records = random.sample(all_records, k=3)
+    results: list[PlaceResult] = []
+    for single_record in three_records:
+        contentid, title, firstimage2, longitude, latitude, distance = single_record
+        results.append(
+            PlaceResult(
+                contentid=contentid,
+                title=title,
+                firstimage2=firstimage2,
+                coordinate=Coordinate(longitude=longitude, latitude=latitude),
+                distance_meter=distance,
+            )
+        )
+
+    return PlacesResult(places=results)
 
 
 @app.get("/compute_routes_sample")
