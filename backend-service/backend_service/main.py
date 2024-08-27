@@ -1,9 +1,11 @@
 import logging
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
+from geoalchemy2 import Geometry
 from pydantic import BaseModel
 from pydantic_extra_types.coordinate import Coordinate
-from sqlalchemy import func
+from sqlalchemy import Row, Select, select, cast
+from geoalchemy2.functions import ST_X, ST_Y
 from sqlalchemy.orm import Session
 
 
@@ -40,11 +42,16 @@ async def echo(message: str | None = None) -> str:
 
 @app.get("/places_sample", response_model=Place)
 def places_sample(session: Session = Depends(db.get_session_yield)):
-    single_record: tuple[DBPlace, float, float] | None = session.query(
+    # cast Geography to Geometry (ST_X, ST_Y only works with Geometry)
+    statement: Select[tuple[DBPlace, float, float]] = select(
         DBPlace,
-        func.ST_X(DBPlace.coordinate),
-        func.ST_Y(DBPlace.coordinate),
-    ).first()  # type: ignore
+        ST_X(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
+        ST_Y(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
+    )
+
+    single_record: Row[tuple[DBPlace, float, float]] | None = session.execute(
+        statement
+    ).first()
     if single_record is None:
         raise ValueError("No records found")
 
