@@ -11,6 +11,8 @@ if [[ "$1" == "minikube" ]]; then
   
   echo ""
   echo "Minikube available at: http://localhost, http://localhost/api"
+  
+  minikube tunnel
 elif [[ "$1" == "gke" ]]; then
   kubectl config use-context "$1"
   kubectl apply -k ./k8s/overlays/"$1"
