@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+spec:
+  selector:
+    label: backend-pod
+  type: ClusterIP
+  ports:
+    - port: 8000 # Expose the service on internal cluster IP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+spec:
+  selector:
+    matchLabels:
+      label: backend-pod
+  template:
+    metadata:
+      labels:
+        label: backend-pod
+    spec:
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: cluster-secret # There will be `secret-backend` named file in volume
+      containers:
+        - name: backend-container
+          image: kimkun07/nyeok-backend:0.4.2
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /backend/app/.secret
+              subPath: secret-backend # Mount only one file from volume
+          ports:
+            - containerPort: 8000 # Expose the container on port 80
+          resources: # (50m, 52Mi) is the minimum request for autopilot burstable
+            requests:
+              cpu: "50m"
+              memory: "192Mi"
+            limits:
+              cpu: "250m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: "/readiness"
+              port: 8000
