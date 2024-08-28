@@ -1,3 +1,7 @@
 namespace: default
 resources:
   - backend.yaml
+secretGenerator:
+  - name: backend-secret
+    envs:
+      - ./.secret.backend

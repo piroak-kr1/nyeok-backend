@@ -31,13 +31,13 @@ spec:
             - run
           args:
             - --token
-            - $(CLOUDFLARE_TOKEN)
+            - $(TOKEN)
           env:
-            - name: CLOUDFLARE_TOKEN
+            - name: TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: cluster-secret
-                  key: cloudflare-token
+                  name: cloudflare-tunnel-secret
+                  key: TOKEN
           resources:
             requests: # (50m, 52Mi) is the minimum request for autopilot burstable
               cpu: "50m"

@@ -8,3 +8,7 @@ patches:
       kind: Deployment
       name: backend-deploy
     path: backend-spot-patch.yaml
+secretGenerator:
+  - name: cloudflare-tunnel-secret
+    envs:
+      - ./.secret.cloudflare

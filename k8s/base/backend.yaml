@@ -22,17 +22,15 @@ spec:
       labels:
         label: backend-pod
     spec:
-      volumes:
-        - name: secret-volume
-          secret:
-            secretName: cluster-secret # There will be `secret-backend` named file in volume
       containers:
         - name: backend-container
           image: kimkun07/nyeok-backend:0.4.2
-          volumeMounts:
-            - name: secret-volume
-              mountPath: /backend/app/.secret
-              subPath: secret-backend # Mount only one file from volume
+          env:
+            - name: GCP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: GCP_API_KEY
           ports:
             - containerPort: 8000 # Expose the container on port 80
           resources: # (50m, 52Mi) is the minimum request for autopilot burstable
