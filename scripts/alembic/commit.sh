@@ -1,7 +1,6 @@
 # This scripts creates a new revision and upgrades the database to the latest revision
 
-scripts_dir=$(dirname "$0")
-runpoetry="$scripts_dir/runpoetry.sh"
+runpoetry="./scripts/runpoetry.sh"
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <revision message>"

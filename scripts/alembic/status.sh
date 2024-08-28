@@ -1,5 +1,4 @@
-scripts_dir=$(dirname "$0")
-runpoetry="$scripts_dir/runpoetry.sh"
+runpoetry="./scripts/runpoetry.sh"
 
 echo "== Running Alembic History =="
 "$runpoetry" database-setup/database_setup alembic history
