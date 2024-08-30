@@ -1,17 +1,20 @@
 [tool.poetry]
 name = "backend-service"
-version = "0.4.2"
+version = "0.5.0"
 description = ""
 authors = ["kimkun07 <kimkun07@naver.com>"]
 readme = "README.md"
 package-mode = false                        # Poetry only used for dependency management
 
+[tool.poetry-monorepo.deps]
+# Plugin: Change path dependency when building & exporting
+
 [tool.poetry.dependencies]
 python = "^3.12"
-database-core = { path = "../database-core", develop = true }
+nyeok-database-core = { path = "../database-core", develop = true }
 fastapi = { extras = ["standard"], version = "^0.112.0" }
 google-maps-routing = "^0.6.10"
-grpcio = "1.64.*"                                             # 1.65.2 version caused error BIOS data file
+grpcio = "1.64.*"                                                   # 1.65.2 version caused error BIOS data file
 pydantic = "^2.8.2"
 pydantic-extra-types = "^2.9.0"
 python-dotenv = "^1.0.1"

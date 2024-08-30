@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: backend-container
-          image: kimkun07/nyeok-backend:0.4.2
+          image: kimkun07/nyeok-backend:0.5.0
           env:
             - name: GCP_API_KEY
               valueFrom:
