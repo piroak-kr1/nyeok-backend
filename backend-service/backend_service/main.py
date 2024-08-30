@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 
 from .outbound import routes_api
 from .models import Place
-from database_core import db
-from database_core.tables import Place as DBPlace
+from nyeok_database_core import db
+from nyeok_database_core.tables import Place as DBPlace
 
 
 app = FastAPI()

@@ -1,5 +1,5 @@
-from database_core import db
-from database_core.tables import Place
+from nyeok_database_core import db
+from nyeok_database_core.tables import Place
 
 from .tourapi import AreaBasedListAPI
 from .tourapi.AreaCode import AreaCode

@@ -2,7 +2,7 @@ from pydantic import BaseModel, HttpUrl
 from pydantic_core import Url
 from pydantic_extra_types.coordinate import Coordinate, Longitude, Latitude
 
-from database_core import tables
+from nyeok_database_core import tables
 
 
 class Place(BaseModel):

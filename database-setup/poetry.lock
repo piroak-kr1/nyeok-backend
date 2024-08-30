@@ -141,24 +141,6 @@ files = [
 ]
 
 [[package]]
-name = "database-core"
-version = "0.1.0"
-description = ""
-optional = false
-python-versions = "^3.12"
-files = []
-develop = true
-
-[package.dependencies]
-geoalchemy2 = "^0.15.2"
-psycopg2 = "^2.9.9"
-sqlalchemy = "^2.0.32"
-
-[package.source]
-type = "directory"
-url = "../database-core"
-
-[[package]]
 name = "geoalchemy2"
 version = "0.15.2"
 description = "Using SQLAlchemy with Spatial Databases"
@@ -345,6 +327,24 @@ files = [
     {file = "MarkupSafe-2.1.5-cp39-cp39-win_amd64.whl", hash = "sha256:fa173ec60341d6bb97a89f5ea19c85c5643c1e7dedebc22f5181eb73573142c5"},
     {file = "MarkupSafe-2.1.5.tar.gz", hash = "sha256:d283d37a890ba4c1ae73ffadf8046435c76e7bc2247bbb63c00bd1a709c6544b"},
 ]
+
+[[package]]
+name = "nyeok-database-core"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "^3.12"
+files = []
+develop = true
+
+[package.dependencies]
+geoalchemy2 = "^0.15.2"
+psycopg2 = "^2.9.9"
+sqlalchemy = "^2.0.32"
+
+[package.source]
+type = "directory"
+url = "../database-core"
 
 [[package]]
 name = "packaging"
@@ -655,4 +655,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "4f7309cf5252cca173f865854cc6b178c0fa17e3509f448a16bce997d4b7dd95"
+content-hash = "2c8293469dd3100bea3f2afe71f6eb3e5d2f0b1f7809d8b65cbe9b992634fd00"
