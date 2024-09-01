@@ -1,7 +1,7 @@
 import logging
 import random
-from typing import Sequence
-from fastapi import FastAPI, Depends
+from typing import Annotated, Sequence
+from fastapi import Body, FastAPI, Depends
 from fastapi.responses import JSONResponse
 from geoalchemy2 import Geometry
 from pydantic import BaseModel
@@ -77,7 +77,10 @@ class PlacesResult(BaseModel):
 
 @app.post("/place_closest")
 def place_closest(
-    user_coordinate: Coordinate, session: Session = Depends(db.get_session_yield)
+    user_coordinate: Annotated[
+        Coordinate, Body(examples=[{"longitude": 126.9402326, "latitude": 37.5565616}])
+    ],
+    session: Session = Depends(db.get_session_yield),
 ) -> PlaceResult:
     statement: Select[tuple[int, str, str, float, float, float]] = select(
         DBPlace.contentid,
