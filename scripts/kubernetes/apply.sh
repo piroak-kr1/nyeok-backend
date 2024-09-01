@@ -1,5 +1,8 @@
 # Description: Run apply -k for minikube or gke
 
+# Always update secret file
+cp ./backend-service/backend_service/.secret ./k8s/base/.secret.backend
+
 if [[ "$1" == "minikube" ]]; then
   # Start minikube if not running
   scripts_dir=$(dirname "$0")

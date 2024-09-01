@@ -10,6 +10,8 @@ from sqlalchemy import Row, Select, select, cast
 from geoalchemy2.functions import ST_X, ST_Y, ST_Distance
 from sqlalchemy.orm import Session
 
+from .env import env
+
 
 from .outbound import routes_api
 from .models import Place
@@ -20,9 +22,9 @@ from nyeok_database_core.tables import Place as DBPlace
 app = FastAPI()
 
 db.setup(
-    username="superuser",
-    password="wrongpassword",
-    hostname="localhost",
+    username=env.POSTGRES_USER,
+    password=env.POSTGRES_PASSWORD,
+    hostname=env.POSTGRES_HOST,
     port=5432,
     databasename="database",
 )

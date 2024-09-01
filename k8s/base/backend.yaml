@@ -24,13 +24,23 @@ spec:
     spec:
       containers:
         - name: backend-container
-          image: kimkun07/nyeok-backend:0.5.0
+          image: kimkun07/nyeok-backend:0.5.6
           env:
             - name: GCP_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: backend-secret
                   key: GCP_API_KEY
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: POSTGRES_PASSWORD
           ports:
             - containerPort: 8000 # Expose the container on port 80
           resources: # (50m, 52Mi) is the minimum request for autopilot burstable

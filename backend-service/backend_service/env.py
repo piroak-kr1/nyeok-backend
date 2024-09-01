@@ -9,23 +9,32 @@ class Env:
     _isDev: bool
     # Write all environment variables here
     # .env
+    POSTGRES_HOST: str
     # .secret
     GCP_API_KEY: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str  # TODO: change password
 
     def __init__(self) -> None:
         self._isProd = "ENV" in os.environ and os.environ["ENV"] == "production"
         self._isDev = not self._isProd
 
+        # Load files in same directory with this file
+        original_cwd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         self.read_files_to_os()
         self.set_env_from_os()
+
+        os.chdir(original_cwd)
 
     def read_files_to_os(self) -> None:
         if self._isProd:
             load_dotenv(".env.prod")
+            # NOTE: secret is already injected to env with k8s pod spec
         else:
             load_dotenv(".env.dev")
-
-        load_dotenv(".secret")
+            load_dotenv(".secret")
 
     def set_env_from_os(self) -> None:
         for key in typing.get_type_hints(self).keys():

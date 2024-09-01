@@ -19,6 +19,9 @@ COPY ./backend_service ./app
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
+# Use .env.prod in env.py
+ENV ENV=production
+
 # Move to /backend/app and run /backend/app/main.py
 # TODO: Use JSON for CMD
 CMD fastapi dev --root-path ${ROOT_PATH:-/} --port 8000 --host 0.0.0.0
