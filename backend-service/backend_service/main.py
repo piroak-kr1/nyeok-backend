@@ -1,8 +1,7 @@
 import logging
 import random
 from typing import Annotated, Sequence
-from fastapi import Body, FastAPI, Depends
-from fastapi.responses import JSONResponse
+from fastapi import Body, FastAPI, Depends, Response
 from geoalchemy2 import Geometry
 from pydantic import BaseModel
 from pydantic_extra_types.coordinate import Coordinate
@@ -157,9 +156,9 @@ def places_random(
 
 
 @app.get("/compute_routes_sample")
-async def compute_routes_sample() -> JSONResponse:
+async def compute_routes_sample() -> Response:
     resultJson: str = await routes_api.sample_compute_routes()
-    return JSONResponse(content=resultJson, media_type="application/json")
+    return Response(content=resultJson, media_type="application/json")
 
 
 class RouteRequest(BaseModel):
@@ -168,13 +167,13 @@ class RouteRequest(BaseModel):
 
 
 @app.post("/compute_routes")
-async def compute_routes(request: RouteRequest) -> JSONResponse:
+async def compute_routes(request: RouteRequest) -> Response:
     origin: Coordinate = request.origin
     destination: Coordinate = request.destination
     resultJson: str = await routes_api.compute_routes(
         origin=origin, destination=destination
     )
-    return JSONResponse(content=resultJson, media_type="application/json")
+    return Response(content=resultJson, media_type="application/json")
 
 
 @app.get("/readiness")
