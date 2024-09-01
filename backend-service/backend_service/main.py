@@ -61,13 +61,13 @@ def place_sample(session: Session = Depends(db.get_session_yield)) -> Place:
     return Place.from_sqlalchemy_model(dbPlace, longitude, latitude)
 
 
-class PlaceResult(BaseModel):
+class PlaceAndDistance(BaseModel):
     place: Place
     distance_meter: float
 
 
 class PlacesResult(BaseModel):
-    places: list[PlaceResult]
+    place_and_distance_list: list[PlaceAndDistance]
 
 
 @app.post("/places_closest")
@@ -97,17 +97,17 @@ def places_closest(
     if not len(all_records) >= 3:
         raise ValueError("Records less than 3")
 
-    results: list[PlaceResult] = []
+    results: list[PlaceAndDistance] = []
     for single_record in all_records[:3]:
         dbPlace, longitude, latitude, distance = single_record
         results.append(
-            PlaceResult(
+            PlaceAndDistance(
                 place=Place.from_sqlalchemy_model(dbPlace, longitude, latitude),
                 distance_meter=distance,
             )
         )
 
-    return PlacesResult(places=results)
+    return PlacesResult(place_and_distance_list=results)
 
 
 @app.get("/compute_routes_sample")
