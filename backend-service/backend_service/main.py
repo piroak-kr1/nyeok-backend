@@ -1,5 +1,4 @@
 import logging
-import random
 from typing import Annotated, Sequence
 from fastapi import Body, FastAPI, Depends, Response
 from geoalchemy2 import Geometry
@@ -63,10 +62,7 @@ def place_sample(session: Session = Depends(db.get_session_yield)) -> Place:
 
 
 class PlaceResult(BaseModel):
-    contentid: int
-    title: str
-    firstimage2: str
-    coordinate: Coordinate
+    place: Place
     distance_meter: float
 
 
@@ -74,17 +70,15 @@ class PlacesResult(BaseModel):
     places: list[PlaceResult]
 
 
-@app.post("/place_closest")
-def place_closest(
+@app.post("/places_closest")
+def places_closest(
     user_coordinate: Annotated[
         Coordinate, Body(examples=[{"longitude": 126.9402326, "latitude": 37.5565616}])
     ],
     session: Session = Depends(db.get_session_yield),
-) -> PlaceResult:
-    statement: Select[tuple[int, str, str, float, float, float]] = select(
-        DBPlace.contentid,
-        DBPlace.title,
-        DBPlace.firstimage2,
+) -> PlacesResult:
+    statement: Select[tuple[DBPlace, float, float, float]] = select(
+        DBPlace,
         ST_X(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
         ST_Y(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
         ST_Distance(
@@ -96,58 +90,19 @@ def place_closest(
         ),  # type: ignore
     ).order_by("distance")
 
-    single_record: Row[tuple[int, str, str, float, float, float]] | None = (
-        session.execute(statement).first()
-    )
-    if single_record is None:
-        raise ValueError("No records found")
-
-    contentid, title, firstimage2, longitude, latitude, distance = single_record
-    return PlaceResult(
-        contentid=contentid,
-        title=title,
-        firstimage2=firstimage2,
-        coordinate=Coordinate(longitude=longitude, latitude=latitude),
-        distance_meter=distance,
-    )
-
-
-@app.post("/places_random")
-def places_random(
-    user_coordinate: Coordinate, session: Session = Depends(db.get_session_yield)
-) -> PlacesResult:
-    statement: Select[tuple[int, str, str, float, float, float]] = select(
-        DBPlace.contentid,
-        DBPlace.title,
-        DBPlace.firstimage2,
-        ST_X(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
-        ST_Y(cast(DBPlace.coordinate, Geometry("POINT", srid=4326))),
-        ST_Distance(
-            DBPlace.coordinate,
-            f"POINT({user_coordinate.longitude} {user_coordinate.latitude})",
-            use_spheroid=True,
-        ).label(
-            "distance"
-        ),  # type: ignore
-    )
-
-    all_records: Sequence[Row[tuple[int, str, str, float, float, float]]] = (
-        session.execute(statement).all()
-    )
+    all_records: Sequence[Row[tuple[DBPlace, float, float, float]]] = session.execute(
+        statement
+    ).all()
 
     if not len(all_records) >= 3:
         raise ValueError("Records less than 3")
 
-    three_records = random.sample(all_records, k=3)
     results: list[PlaceResult] = []
-    for single_record in three_records:
-        contentid, title, firstimage2, longitude, latitude, distance = single_record
+    for single_record in all_records[:3]:
+        dbPlace, longitude, latitude, distance = single_record
         results.append(
             PlaceResult(
-                contentid=contentid,
-                title=title,
-                firstimage2=firstimage2,
-                coordinate=Coordinate(longitude=longitude, latitude=latitude),
+                place=Place.from_sqlalchemy_model(dbPlace, longitude, latitude),
                 distance_meter=distance,
             )
         )
