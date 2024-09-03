@@ -4,3 +4,8 @@ resources:
   - ../../base
   - ingress.yaml
   - nginx-welcome.yaml
+configMapGenerator:
+  - name: nginx-reverse-proxy-config
+    behavior: replace
+    files:
+      - nginx.conf
