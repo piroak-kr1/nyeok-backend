@@ -42,7 +42,7 @@ spec:
                   name: backend-secret
                   key: POSTGRES_PASSWORD
             - name: ROOT_PATH
-              value: "/api" # TODO: Change this to /v1/api
+              value: "/api" # When browser hits /api, backend gets / (nginx-reverse-proxy)
           ports:
             - containerPort: 8000 # Expose the container on port 80
           resources: # (50m, 52Mi) is the minimum request for autopilot burstable

@@ -1,6 +1,12 @@
 namespace: default
 resources:
+  - nginx-reverse-proxy.yaml
   - backend.yaml
+  - postgres.yaml
+configMapGenerator:
+  - name: nginx-reverse-proxy-config
+    files:
+      - ./nginx.conf
 secretGenerator:
   - name: backend-secret
     envs:

@@ -1,0 +1,45 @@
+# This nginx pod is only for "Welcome to nginx!" page
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  selector:
+    label: nginx-pod
+  type: ClusterIP
+  ports:
+    - port: 80 # Expose the service on internal cluster IP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  selector:
+    matchLabels:
+      label: nginx-pod
+  template:
+    metadata:
+      labels:
+        label: nginx-pod
+    spec:
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-reverse-proxy-config
+      containers:
+        - name: nginx-container
+          image: nginx:1.27
+          volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          ports:
+            - containerPort: 80 # Expose the container on port 80
+          resources:
+            requests: # (50m, 52Mi) is the minimum request for autopilot burstable
+              cpu: "50m"
+              memory: "52Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
