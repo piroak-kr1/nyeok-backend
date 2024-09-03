@@ -29,9 +29,12 @@ spec:
         - name: postgres-container
           image: postgis/postgis:16-3.4
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data # PGDATA
+            - mountPath: /var/lib/postgresql/data
               name: postgres-volume
           env: # Environment variables
+            - name: PGDATA
+              # Data directory should be subdirectory under mount point
+              value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_USER
               value: "superuser"
             - name: POSTGRES_PASSWORD
