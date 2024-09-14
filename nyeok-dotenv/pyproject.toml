@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "nyeok-dotenv"
+version = "0.1.0"
+description = ""
+authors = ["kimkun07 <kimkun07@naver.com>"]
+readme = "README.md"
+
+[tool.poetry-monorepo.deps]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
