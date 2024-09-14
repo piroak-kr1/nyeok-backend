@@ -1,7 +1,7 @@
 # Argument: major, minor, patch
 
 # Change directory for subsequent poetry commands
-cd "./backend-service"
+cd "./database-setup"
 
 prev_version=$(poetry version)
 
@@ -24,5 +24,5 @@ fi
 # NOTE: You should have installed poetry-plugin-mono-repo-deps plugin
 poetry export --without-hashes --output requirements.txt
 
-docker build --tag kimkun07/nyeok-backend:$(poetry version --short) .
-docker push kimkun07/nyeok-backend:$(poetry version --short)
+docker build --tag kimkun07/nyeok-database-setup:$(poetry version --short) .
+docker push kimkun07/nyeok-database-setup:$(poetry version --short)
