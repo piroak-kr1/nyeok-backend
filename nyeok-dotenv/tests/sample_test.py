@@ -3,7 +3,14 @@ import os
 from nyeok_dotenv.EnvBase import EnvBase
 
 
-class MyEnv[ModeT: StrEnum](EnvBase[ModeT]):
+class RuntimeType(StrEnum):
+    # Enum name is used in code
+    # Enum value is used to be set as environment variable value
+    PROD = "prod"
+    DEV = "dev"
+
+
+class SampleEnv(EnvBase[RuntimeType]):
     # You should Write all environment variables here
     # .env
     POSTGRES_USER: str
@@ -11,21 +18,12 @@ class MyEnv[ModeT: StrEnum](EnvBase[ModeT]):
     POSTGRES_PASSWORD: str
 
 
-class MyMode(StrEnum):
-    # Enum name is used in code
-    # Enum value is used to be set in Dockerfile
-    PROD = "prod"
-    DEV = "dev"
-
-
-os.environ["APP_ENV"] = MyMode.DEV.value
-# use-site Env.py와 같은 디렉토리를 read하는 것을 보장해야 한다.
-env = MyEnv(
-    # Set as "ENV APP_ENV=prod" in Dockerfile
+os.environ["RUNTIME_TYPE"] = RuntimeType.DEV.value
+env = SampleEnv(
     files_to_load={
-        MyMode.PROD: [".env.prod"],  # .secret is loaded by env in k8s
-        MyMode.DEV: [".env.dev", ".secret"],
+        RuntimeType.PROD: [".env.prod"],  # .secret is loaded by env in k8s
+        RuntimeType.DEV: [".env.dev", ".secret"],
     },
     directory=os.path.dirname(__file__),
-    env_variable_for_mode="APP_ENV",
+    env_variable_for_type="RUNTIME_TYPE",
 )

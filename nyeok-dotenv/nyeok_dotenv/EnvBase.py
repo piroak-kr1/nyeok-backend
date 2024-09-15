@@ -84,46 +84,45 @@ def load_enum_from_environment_by_value[
         raise ValueError(f'"{mode_str}" does not exist for "{EnumT}".value')
 
 
-class EnvBase[ModeT: StrEnum]:
-    _mode: ModeT
-    _files_to_load: list[str]
+class EnvBase[RuntimeTypeT: StrEnum]:
+    _runtimeType: RuntimeTypeT
 
     def __init__(
         self,
-        files_to_load: dict[ModeT, list[str]],
+        files_to_load: dict[RuntimeTypeT, list[str]],
         directory: str | None = None,
-        env_variable_for_mode: str | None = None,
-        default_mode: ModeT | None = None,
+        env_variable_for_type: str | None = None,
+        default_type: RuntimeTypeT | None = None,
     ) -> None:
         """Select mode by `env_variable_for_mode` and load files according to mode.
 
         :param files_to_load: Dictionary of list of files to load according to ModeT.
-        :param directory: Directory where files are located. Use pwd if not set.
-        :param env_variable_for_mode: You should set Environment variable `${env_variable_for_mode}` to mode.value in Dockerfile.
+        :param directory: abspath for locations of files. Use cwd if not set.
+        :param env_variable_for_type: You should set Environment variable `${env_variable_for_mode}` to mode.value in Dockerfile.
         """
 
         # TODO: Validate configs
         # all value should be different
 
-        # Select Mode
-        if env_variable_for_mode is not None:
-            # Select mode by reading environment variable
-            self._mode = load_enum_from_environment_by_value(
+        # Select Runtime Type
+        if env_variable_for_type is not None:
+            # Select runtime type by reading environment variable
+            self._runtimeType = load_enum_from_environment_by_value(
                 available_enums=files_to_load.keys(),
-                env_variable_key=env_variable_for_mode,
-                default_value=default_mode,
+                env_variable_key=env_variable_for_type,
+                default_value=default_type,
             )
         else:
-            # If env_variable_for_mode is not set, use default_mode
-            if default_mode is None:
+            # If env_variable_for_type is not set, use default_type
+            if default_type is None:
                 raise ValueError(
-                    f"You should set either env_variable_for_mode or default_mode"
+                    f"You should set either env_variable_for_type or default_type"
                 )
-            self._mode = default_mode
+            self._runtimeType = default_type
 
         # Load files
         self.read_files_to_environment(
-            files_to_load=files_to_load[self._mode],
+            files_to_load=files_to_load[self._runtimeType],
             directory=directory,
         )
         self.set_attr_from_environment()
@@ -136,7 +135,7 @@ class EnvBase[ModeT: StrEnum]:
             for file in files_to_load:
                 # Check if file exists
                 if not os.path.isfile(file):
-                    raise FileNotFoundError(f"File {file} does not exist")
+                    raise FileNotFoundError(f"{file=} does not exist in {directory=}")
                 load_dotenv(file)
 
     def set_attr_from_environment(self) -> None:
@@ -146,7 +145,7 @@ class EnvBase[ModeT: StrEnum]:
             if key.startswith("_"):  # filter some attributes
                 continue
             if key not in os.environ:
-                raise Exception(f"Missing {key} in os.environ")
+                raise Exception(f"Missing {key=} in os.environ")
             setattr(self, key, os.environ[key])
 
     def __str__(self) -> str:
