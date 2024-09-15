@@ -94,12 +94,7 @@ class EnvBase[RuntimeTypeT: StrEnum]:
         env_variable_for_type: str | None = None,
         default_type: RuntimeTypeT | None = None,
     ) -> None:
-        """Select mode by `env_variable_for_mode` and load files according to mode.
-
-        :param files_to_load: Dictionary of list of files to load according to ModeT.
-        :param directory: abspath for locations of files. Use cwd if not set.
-        :param env_variable_for_type: You should set Environment variable `${env_variable_for_mode}` to mode.value in Dockerfile.
-        """
+        # TODO: docstring
 
         # TODO: Validate configs
         # all value should be different
@@ -131,12 +126,15 @@ class EnvBase[RuntimeTypeT: StrEnum]:
         self, files_to_load: list[str], directory: str | None
     ) -> None:
         """Read all env files from directory and set os.environ"""
+
         with DirectoryChanger(directory):
             for file in files_to_load:
                 # Check if file exists
                 if not os.path.isfile(file):
                     raise FileNotFoundError(f"{file=} does not exist in {directory=}")
                 load_dotenv(file)
+
+        # returned to original cwd
 
     def set_attr_from_environment(self) -> None:
         """Read os.environ and set attributes of this class"""
