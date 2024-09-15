@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import StrEnum
 from .EnvBase import EnvBase
 
 
-class MyEnv[ModeT: Enum](EnvBase[ModeT]):
+class MyEnv[ModeT: StrEnum](EnvBase[ModeT]):
     # You should Write all environment variables here
     # .env
     POSTGRES_USER: str
@@ -10,7 +10,7 @@ class MyEnv[ModeT: Enum](EnvBase[ModeT]):
     POSTGRES_PASSWORD: str
 
 
-class MyMode(Enum):
+class MyMode(StrEnum):
     # Enum name is used in code
     # Enum value is used to be set in Dockerfile
     PROD = "prod"

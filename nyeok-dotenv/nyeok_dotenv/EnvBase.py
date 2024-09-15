@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, StrEnum
 import os
 import typing
 from typing import Any, Iterable
@@ -35,7 +35,7 @@ def find_enum_by_value[
 
 
 def load_enum_from_environment_by_value[
-    EnumT: Enum
+    EnumT: StrEnum
 ](
     available_enums: Iterable[EnumT],
     env_variable_key: str,
@@ -83,7 +83,7 @@ def load_enum_from_environment_by_value[
         raise ValueError(f'"{mode_str}" does not exist for "{EnumT}".value')
 
 
-class EnvBase[ModeT: Enum]:
+class EnvBase[ModeT: StrEnum]:
     _mode: ModeT
     _files_to_load: list[str]
 
