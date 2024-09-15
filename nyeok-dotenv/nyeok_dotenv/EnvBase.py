@@ -3,6 +3,7 @@ import os
 import typing
 from typing import Any, Iterable
 from dotenv import load_dotenv
+from .DirecoryChanger import DirectoryChanger
 
 
 def find_enum_by_value[
@@ -89,14 +90,15 @@ class EnvBase[ModeT: StrEnum]:
 
     def __init__(
         self,
-        configs: dict[ModeT, list[str]],
+        files_to_load: dict[ModeT, list[str]],
+        directory: str | None = None,
         env_variable_for_mode: str | None = None,
         default_mode: ModeT | None = None,
-        directory: str = os.path.dirname(os.path.abspath(__file__)),
     ) -> None:
         """Select mode by `env_variable_for_mode` and load files according to mode.
 
-        :param configs: Dictionary of list of files to load according to ModeT.
+        :param files_to_load: Dictionary of list of files to load according to ModeT.
+        :param directory: Directory where files are located. Use pwd if not set.
         :param env_variable_for_mode: You should set Environment variable `${env_variable_for_mode}` to mode.value in Dockerfile.
         """
 
@@ -107,7 +109,7 @@ class EnvBase[ModeT: StrEnum]:
         if env_variable_for_mode is not None:
             # Select mode by reading environment variable
             self._mode = load_enum_from_environment_by_value(
-                available_enums=configs.keys(),
+                available_enums=files_to_load.keys(),
                 env_variable_key=env_variable_for_mode,
                 default_value=default_mode,
             )
@@ -121,26 +123,21 @@ class EnvBase[ModeT: StrEnum]:
 
         # Load files
         self.read_files_to_environment(
-            files_to_load=configs[self._mode],
+            files_to_load=files_to_load[self._mode],
             directory=directory,
         )
         self.set_attr_from_environment()
 
     def read_files_to_environment(
-        self, files_to_load: list[str], directory: str
+        self, files_to_load: list[str], directory: str | None
     ) -> None:
         """Read all env files from directory and set os.environ"""
-
-        original_cwd = os.getcwd()
-        os.chdir(os.path.abspath(directory))
-
-        for file in files_to_load:
-            # Check if file exists
-            if not os.path.isfile(file):
-                raise FileNotFoundError(f"File {file} does not exist")
-            load_dotenv(file)
-
-        os.chdir(original_cwd)
+        with DirectoryChanger(directory):
+            for file in files_to_load:
+                # Check if file exists
+                if not os.path.isfile(file):
+                    raise FileNotFoundError(f"File {file} does not exist")
+                load_dotenv(file)
 
     def set_attr_from_environment(self) -> None:
         """Read os.environ and set attributes of this class"""

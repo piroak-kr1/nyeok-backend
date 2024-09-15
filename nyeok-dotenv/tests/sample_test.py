@@ -22,10 +22,10 @@ os.environ["APP_ENV"] = MyMode.DEV.value
 # use-site Env.py와 같은 디렉토리를 read하는 것을 보장해야 한다.
 env = MyEnv(
     # Set as "ENV APP_ENV=prod" in Dockerfile
-    configs={
+    files_to_load={
         MyMode.PROD: [".env.prod"],  # .secret is loaded by env in k8s
         MyMode.DEV: [".env.dev", ".secret"],
     },
-    env_variable_for_mode="APP_ENV",
     directory=os.path.dirname(__file__),
+    env_variable_for_mode="APP_ENV",
 )
