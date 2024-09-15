@@ -5,12 +5,82 @@ from typing import Any, Iterable
 from dotenv import load_dotenv
 
 
-def find_by_enum_value[
+def find_enum_by_value[
     EnumT: Enum
 ](enums: Iterable[EnumT], enum_value: Any) -> EnumT | None:
-    """Search enums according to enum.value"""
+    """
+    Finds an enum member by its value from a collection of enum members.
+
+    This function takes an iterable of enum members and a value. It returns the first enum member
+    whose `.value` matches the provided value. If no match is found, it returns `None`.
+
+    Args:
+        enums (Iterable[EnumT]): An iterable collection of enum members to search.
+        enum_value (Any): The value to match against the `.value` attribute of the enum members.
+
+    Returns:
+        EnumT | None: The first enum member whose `.value` equals `enum_value`, or `None` if no match is found.
+
+    Example:
+        class Color(Enum):
+            RED = 1
+            BLUE = 2
+            GREEN = 3
+
+        color = find_by_enum_value(Color, 2)
+        # Returns: Color.BLUE
+    """
     single_result: filter[EnumT] = filter(lambda x: x.value == enum_value, enums)
     return next(single_result, None)
+
+
+def load_enum_from_environment_by_value[
+    EnumT: Enum
+](
+    available_enums: Iterable[EnumT],
+    env_variable_key: str,
+    default_value: EnumT | None = None,
+) -> EnumT:
+    """
+    Loads an enum from an environment variable.
+
+    This function retrieves a value from the environment using the specified
+    environment variable name, then matches it with one of the provided enums
+    by comparing the value to the `value` attribute of each enum. If no match
+    is found and no default is provided, it raises an error.
+
+    Args:
+        available_enums (Iterable[EnumT]): A collection of enum members to search.
+        env_variable_key (str): The name of the environment variable to fetch the enum.
+        default_value (EnumT | None): The default enum to return if no match is found.
+            If not provided and the value doesn't match any enum, an error is raised.
+
+    Returns:
+        EnumT: The matched enum member based on the value of the environment variable.
+
+    Raises:
+        Exception: If the specified environment variable is not set.
+        ValueError: If the value retrieved from the environment variable does not match any
+            of the available enum members and no default is provided.
+    """
+
+    # Try search_result.value == os.environ[env_variable_key]
+    try:
+        mode_str = os.environ[env_variable_key]
+    except KeyError:
+        mode_str = None
+    search_result: EnumT | None = (
+        find_enum_by_value(available_enums, mode_str) if mode_str is not None else None
+    )
+
+    if search_result is not None:
+        return search_result
+    if default_value is not None:
+        return default_value
+    if mode_str is None:
+        raise Exception(f'There is no "{env_variable_key}" in os.environ')
+    else:  # mode_str is not None, but search_result is None
+        raise ValueError(f'"{mode_str}" does not exist for "{EnumT}".value')
 
 
 class EnvBase[ModeT: Enum]:
@@ -30,65 +100,46 @@ class EnvBase[ModeT: Enum]:
         """
 
         # TODO: Validate configs
+        # all value should be different
 
-        # Select mode by reading environment variable
-        self._mode = self.choose_mode(
-            available_modes=configs.keys(),
-            env_variable_for_mode=env_variable_for_mode,
-            default_mode=default_mode,
-        )
-        self._files_to_load = configs[self._mode]
-
-        # Load files in same directory with this file
-        original_cwd = os.getcwd()
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-        self.read_files_to_os()
-        self.set_env_from_os()
-
-        os.chdir(original_cwd)
-
-    def choose_mode(
-        self,
-        available_modes: Iterable[ModeT],
-        env_variable_for_mode: str | None = None,
-        default_mode: ModeT | None = None,
-    ) -> ModeT:
-        """Choose mode by reading environment variable.
-
-        :param available_modes: List of all available modes.
-        :param env_variable_for_mode: Environment variable name for mode selection.
-        :param default_mode: Default mode if environment variable is not set.
-        """
-
-        # If env variable is not set, use default mode
-        if env_variable_for_mode is None:
+        # Select Mode
+        if env_variable_for_mode is not None:
+            # Select mode by reading environment variable
+            self._mode = load_enum_from_environment_by_value(
+                available_enums=configs.keys(),
+                env_variable_key=env_variable_for_mode,
+                default_value=default_mode,
+            )
+        else:
+            # If env_variable_for_mode is not set, use default_mode
             if default_mode is None:
                 raise ValueError(
                     f"You should set either env_variable_for_mode or default_mode"
                 )
-            return default_mode
+            self._mode = default_mode
 
-        # Otherwise, read env varaiable
-        try:
-            mode_str = os.environ[env_variable_for_mode]
-        except KeyError:
-            raise Exception(f'There is no "{env_variable_for_mode}" in os.environ')
+        # Load files
+        self.read_files_to_environment(
+            files_to_load=configs[self._mode],
+            directory=os.path.dirname(os.path.abspath(__file__)),
+        )
+        self.set_attr_from_environment()
 
-        search_result = find_by_enum_value(available_modes, mode_str)
-        if search_result is None:
-            raise ValueError(f'"{mode_str}" does not exists for "{ModeT}".value')
+    def read_files_to_environment(
+        self, files_to_load: list[str], directory: str
+    ) -> None:
+        """Read all env files from directory and set os.environ"""
 
-        return search_result
+        original_cwd = os.getcwd()
+        os.chdir(os.path.abspath(directory))
 
-    def read_files_to_os(self) -> None:
-        """Read all env files and set os.environ"""
-
-        for file in self._files_to_load:
+        for file in files_to_load:
             # TODO: check if file exists
             load_dotenv(file)
 
-    def set_env_from_os(self) -> None:
+        os.chdir(original_cwd)
+
+    def set_attr_from_environment(self) -> None:
         """Read os.environ and set attributes of this class"""
 
         for key in typing.get_type_hints(self).keys():
@@ -99,5 +150,4 @@ class EnvBase[ModeT: Enum]:
             setattr(self, key, os.environ[key])
 
     def __str__(self) -> str:
-        # TODO:
         return "\n".join([f"{key}: {value}" for key, value in vars(self).items()])
