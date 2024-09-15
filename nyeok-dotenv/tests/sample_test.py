@@ -1,5 +1,6 @@
 from enum import StrEnum
-from .EnvBase import EnvBase
+import os
+from nyeok_dotenv.EnvBase import EnvBase
 
 
 class MyEnv[ModeT: StrEnum](EnvBase[ModeT]):
@@ -17,6 +18,7 @@ class MyMode(StrEnum):
     DEV = "dev"
 
 
+os.environ["APP_ENV"] = MyMode.DEV.value
 # use-site Env.py와 같은 디렉토리를 read하는 것을 보장해야 한다.
 env = MyEnv(
     # Set as "ENV APP_ENV=prod" in Dockerfile
@@ -25,6 +27,5 @@ env = MyEnv(
         MyMode.DEV: [".env.dev", ".secret"],
     },
     env_variable_for_mode="APP_ENV",
+    directory=os.path.dirname(__file__),
 )
-
-print(env)

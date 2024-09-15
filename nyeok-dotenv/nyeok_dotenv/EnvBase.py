@@ -92,6 +92,7 @@ class EnvBase[ModeT: StrEnum]:
         configs: dict[ModeT, list[str]],
         env_variable_for_mode: str | None = None,
         default_mode: ModeT | None = None,
+        directory: str = os.path.dirname(os.path.abspath(__file__)),
     ) -> None:
         """Select mode by `env_variable_for_mode` and load files according to mode.
 
@@ -121,7 +122,7 @@ class EnvBase[ModeT: StrEnum]:
         # Load files
         self.read_files_to_environment(
             files_to_load=configs[self._mode],
-            directory=os.path.dirname(os.path.abspath(__file__)),
+            directory=directory,
         )
         self.set_attr_from_environment()
 
@@ -134,7 +135,9 @@ class EnvBase[ModeT: StrEnum]:
         os.chdir(os.path.abspath(directory))
 
         for file in files_to_load:
-            # TODO: check if file exists
+            # Check if file exists
+            if not os.path.isfile(file):
+                raise FileNotFoundError(f"File {file} does not exist")
             load_dotenv(file)
 
         os.chdir(original_cwd)
