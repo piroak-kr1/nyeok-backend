@@ -1,7 +1,4 @@
 import os
-from unittest import mock
-
-import pytest
 from .SampleClass import SampleEnv, RuntimeType
 
 
@@ -17,12 +14,6 @@ def get_env() -> SampleEnv:
         env_variable_for_type="RUNTIME_TYPE",
         default_type=None,
     )
-
-
-@pytest.fixture(autouse=True)
-def clean_environ():
-    with mock.patch.dict(os.environ, {}):
-        yield
 
 
 def test_environ_empty_before():
