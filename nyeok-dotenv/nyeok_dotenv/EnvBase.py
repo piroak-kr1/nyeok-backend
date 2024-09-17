@@ -97,7 +97,9 @@ class EnvBase[RuntimeTypeT: StrEnum]:
         # TODO: docstring
 
         # TODO: Validate configs
-        # all value should be different
+        # All instances of `RuntimeTypeT` should exist in configs.
+        #   (This is to avoid non-deterministic errors)
+        # All values of `RuntimeTypeT` should be different from each other.
 
         # Select Runtime Type
         if env_variable_for_type is not None:
