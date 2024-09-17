@@ -81,7 +81,7 @@ def load_enum_from_environment_by_value[
     if mode_str is None:
         raise Exception(f'There is no "{env_variable_key}" in os.environ')
     else:  # mode_str is not None, but search_result is None
-        raise ValueError(f'"{mode_str}" does not exist for "{EnumT}".value')
+        raise ValueError(f'"{mode_str}" does not exist in available_enums.value')
 
 
 class EnvBase[RuntimeTypeT: StrEnum]:
