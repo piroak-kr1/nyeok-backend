@@ -139,7 +139,13 @@ class EnvBase[RuntimeTypeT: StrEnum]:
     def set_attr_from_environment(self) -> None:
         """Read os.environ and set attributes of this class"""
 
-        for key in typing.get_type_hints(self).keys():
+        # Get type hints from the class hierarchy
+        type_hints: dict[str, Any] = {}
+        for cls in self.__class__.__mro__:  # Traverse the MRO (method resolution order)
+            type_hints.update(typing.get_type_hints(cls))
+
+        # Set attributes from os.environ
+        for key in type_hints.keys():
             if key.startswith("_"):  # filter some attributes
                 continue
             if key not in os.environ:

@@ -12,8 +12,13 @@ class RuntimeType(StrEnum):
 
 
 class SampleEnv(EnvBase[RuntimeType]):
-    # You should Write all environment variables here
+    # You should write all environment variables here
+
+    # EnvBase will not try to load variable with _ prefix
+    # ex) _hidden_variable: str
+
     # .env
     POSTGRES_USER: str
+
     # .secret
     POSTGRES_PASSWORD: str
