@@ -33,11 +33,12 @@ def test_default_value():
 
 def test_no_env_without_default():
     # Do not set MY_ENUM
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as e:
         load_enum_from_environment_by_value(
             available_enums=MyEnum,
             env_variable_key="MY_ENUM",
         )
+    assert str(e.value) == 'There is no "MY_ENUM" in os.environ'
 
 
 def test_bad_value_with_default():
@@ -54,9 +55,9 @@ def test_bad_value_with_default():
 def test_bad_value_without_default():
     os.environ["MY_ENUM"] = "d"
 
-    with pytest.raises(ValueError):
-        # "d" does not exist in available_enums.value
+    with pytest.raises(ValueError) as e:
         load_enum_from_environment_by_value(
             available_enums=MyEnum,
             env_variable_key="MY_ENUM",
         )
+    assert str(e.value) == '"d" does not exist in available_enums.value'
