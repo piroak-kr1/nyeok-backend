@@ -1,5 +1,6 @@
 import os
 from enum import StrEnum
+import textwrap
 
 from nyeok_dotenv.EnvBase import EnvBase
 
@@ -62,3 +63,18 @@ def test_prod():
 
 def test_environ_empty_after():
     assert "RUNTIME_TYPE" not in os.environ
+
+
+def test_str():
+    os.environ["RUNTIME_TYPE"] = RuntimeType.DEV.value
+    env = get_env()
+
+    expected = textwrap.dedent(
+        """
+        _runtimeType: dev
+        POSTGRES_USER: username-dev
+        POSTGRES_PASSWORD: password1234
+        """
+    ).strip()
+
+    assert str(env) == expected
