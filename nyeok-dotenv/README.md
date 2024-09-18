@@ -1,8 +1,10 @@
 # nyeok-dotenv
 
-`nyeok-dotenv` manages environment variable from env files for different build types at once.
+`nyeok-dotenv` manages environment variables from `.env` files for different build types.
 
 ## Installation
+
+To install `nyeok-dotenv`, run:
 
 ```sh
 pip install nyeok-dotenv
@@ -10,9 +12,9 @@ pip install nyeok-dotenv
 
 ## Usage
 
-### Setup directory structure
+### Setup Directory Structure
 
-`sample_env.py` will load .env files from the same directory.
+`sample_env.py` will load `.env` files from the same directory.
 
 ```
 .
@@ -24,7 +26,7 @@ pip install nyeok-dotenv
 └── sample_env.py
 ```
 
-### Create a new environment variable class
+### Create a New Environment Variable Class
 
 ```py
 # sample_env.py
@@ -41,7 +43,7 @@ class RuntimeType(StrEnum):
     DEV = "dev"
 
 class SampleEnv(EnvBase[RuntimeType]):
-    # Define all environment variables as type hint
+    # Define environment variables as type hints
 
     # nyeok-dotenv will not load _ prefix variables
     _hidden_variable: str
@@ -52,36 +54,39 @@ class SampleEnv(EnvBase[RuntimeType]):
     # From .secret
     POSTGRES_PASSWORD: str
 
-# Create env class and export to other files
+# Create the environment class and export it
 env = SampleEnv(
     runtime_type_cls=RuntimeType,
     files_to_load={
-        RuntimeType.PROD: [".env.prod"], # secret will be set by k8s
+        RuntimeType.PROD: [".env.prod"],  # secret will be set by k8s
         RuntimeType.STAGE: [".env.stage", ".secret"],
         RuntimeType.DEV: [".env.dev", ".secret"],
     },
-    # .env files will be searched in the same directory
-    #    with sample_env.py file
+    # .env files will be searched in the same directory as sample_env.py
     directory=os.path.dirname(__file__),
 
-    # environment variable with key "RUNTIME_TYPE" will be searched
+    # Environment variable with key "RUNTIME_TYPE" will be used to determine the runtime type
     env_variable_for_type="RUNTIME_TYPE",
 
-    # RuntimeType.DEV will be used when RUNTIME_TYPE is not set
+    # Default to RuntimeType.DEV if RUNTIME_TYPE is not set
     default_type=RuntimeType.DEV,
 )
 ```
 
-### Load environment variables
+### Load Environment Variables
 
-Run `RUNTIME_TYPE=dev; python -m main`
+Run the application with the desired runtime type:
+
+```sh
+RUNTIME_TYPE=dev; python -m main
+```
 
 ```py
 # main.py
 
 from .sample_env import env
 
-# You can check the runtime type by accessing _runtime_type
+# Check the runtime type
 assert env._runtime_type == RuntimeType.DEV
 
 print(env.POSTGRES_USER)
@@ -90,11 +95,9 @@ print(env.POSTGRES_PASSWORD)
 
 ## Examples
 
-### Handling secrets
+### Handling Secrets
 
-You may have `.secret` files in local, and set .gitignore for them.
-However you don't want to ship `.secret` files to production environment.
-Instead, you can set environment variables directly in k8s, and `nyeok-dotenv` will load them in your env class.
+You may have `.secret` files locally but don't want to include them in production. Instead, set environment variables directly in Kubernetes, and `nyeok-dotenv` will load them.
 
 ```
 .
@@ -108,7 +111,7 @@ Instead, you can set environment variables directly in k8s, and `nyeok-dotenv` w
     └── deployment.yaml
 ```
 
-**Create k8s secret from local `.secret` file (kustomize)**
+**Create Kubernetes Secret from Local `.secret` File (Using Kustomize)**
 
 ```yaml
 # ./k8s/kustomization.yaml
@@ -119,12 +122,12 @@ secretGenerator:
 ```
 
 ```sh
-# Update secret file to match local development environment
+# Update the secret file to match the local development environment
 cp .secret k8s/.secret
 kubectl apply -k k8s
 ```
 
-**Load secret in k8s deployment**
+**Load Secret in Kubernetes Deployment**
 
 ```yaml
 containers:
@@ -137,17 +140,16 @@ containers:
             key: POSTGRES_PASSWORD
 ```
 
-**Use env in code**
+**Use Env in Code**
 
-Now you can use `env.POSTGRES_PASSWORD`, both in dev environment and production environment.
+You can now use `env.POSTGRES_PASSWORD` in both development and production environments.
 
 ### Without RuntimeType
 
 > [!CAUTION]
 > This feature is not implemented yet.
 
-One might want to use `nyeok-dotenv` for managing environment variables for only one build type.
-i.e. You want to load environment variables from `.env` and `.secret` files and access them by concrete class.
+If you want to manage environment variables for only one build type, you can use `nyeok-dotenv` without `RuntimeType`.
 
 ```py
 # no_runtime_type.py
@@ -166,9 +168,9 @@ env = SampleEnv(
 )
 ```
 
-### Load files from different directories
+### Load Files from Different Directories
 
-You can specify `directory` to load `.env` files from different directories.
+Specify the `directory` to load `.env` files from different locations.
 
 ```
 .
@@ -196,4 +198,6 @@ env = SampleEnv(
 ```
 
 > [!NOTE]  
-> If you don't specify `directory`, `nyeok-dotenv` will search `.env` files from the current working directory.
+> If you don't specify directory, nyeok-dotenv will search .env files from the current working directory.
+
+---
