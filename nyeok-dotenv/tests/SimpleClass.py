@@ -1,8 +1,9 @@
-from enum import StrEnum
+from enum import StrEnum, unique
 
 from nyeok_dotenv.EnvBase import EnvBase
 
 
+@unique
 class SimpleRuntimeType(StrEnum):
     PROD = "prod"
     DEV = "dev"

@@ -29,6 +29,7 @@ class SampleEnv(EnvBase[RuntimeType]):
 def get_env() -> SampleEnv:
     # Helper function for most of the tests
     return SampleEnv(
+        runtime_type_cls=RuntimeType,
         files_to_load={
             RuntimeType.PROD: [".env.prod"],  # .secret is loaded by env in k8s
             RuntimeType.STAGE: [".env.stage", ".secret"],

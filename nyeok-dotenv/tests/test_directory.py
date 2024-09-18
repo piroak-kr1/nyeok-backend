@@ -12,6 +12,7 @@ def get_env_dir1() -> SimpleEnv:
     dir1_path = os.path.join(os.path.dirname(__file__), "dir1")
 
     return SimpleEnv(
+        runtime_type_cls=SimpleRuntimeType,
         files_to_load={
             SimpleRuntimeType.PROD: [".env.prod"],
             SimpleRuntimeType.DEV: [".env.dev"],
@@ -27,6 +28,7 @@ def get_env_dir2() -> SimpleEnv:
     dir2_path = os.path.join(os.path.dirname(__file__), "dir2")
 
     return SimpleEnv(
+        runtime_type_cls=SimpleRuntimeType,
         files_to_load={
             SimpleRuntimeType.PROD: [".env.prod"],
             SimpleRuntimeType.DEV: [".env.dev"],
@@ -67,6 +69,7 @@ def test_dir2_dev():
 
 def get_env_current_dir() -> SimpleEnv:
     return SimpleEnv(
+        runtime_type_cls=SimpleRuntimeType,
         files_to_load={
             SimpleRuntimeType.PROD: [".env.prod"],
             SimpleRuntimeType.DEV: [".env.dev"],
