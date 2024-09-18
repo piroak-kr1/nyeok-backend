@@ -104,6 +104,19 @@ def load_enum_from_environment_by_value[
 
 
 class EnvBase[RuntimeTypeT: StrEnum]:
+    """
+    Base class for managing environment configurations based on runtime types.
+
+    This class provides functionality to:
+    1. Validate the configuration of environment files to ensure that all runtime types are covered and values are unique.
+    2. Select a runtime type based on an environment variable or default value.
+    3. Load environment variables from the specified files corresponding to the selected runtime type.
+    4. Set class attributes based on the loaded environment variables.
+
+    Attributes:
+        _runtimeType (RuntimeTypeT): The runtime type currently selected, determining which environment files to load. (ex) dev, prod)
+    """
+
     _runtimeType: RuntimeTypeT
 
     def __init__(
