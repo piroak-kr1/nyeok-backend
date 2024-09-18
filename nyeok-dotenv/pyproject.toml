@@ -1,19 +1,20 @@
 [tool.poetry]
-name = "database-setup"
-version = "0.2.2"
+name = "nyeok-dotenv"
+version = "0.1.0"
 description = ""
 authors = ["kimkun07 <kimkun07@naver.com>"]
 readme = "README.md"
 
-[tool.poetry-monorepo.deps]
-
 [tool.poetry.dependencies]
 python = "^3.12"
-nyeok-database-core = { path = "../database-core", develop = true }
-alembic = "^1.13.2"
-pydantic = "^2.8.2"
-requests = "^2.32.3"
 python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+coverage = "^7.6.1"
+
+[tool.poetry-monorepo.deps]
+
 
 [build-system]
 requires = ["poetry-core"]

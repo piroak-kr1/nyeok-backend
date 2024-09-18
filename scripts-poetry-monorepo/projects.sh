@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # all python packages, in topological order
-PROJECTS='database-core database-setup backend-service'
+PROJECTS='nyeok-dotenv database-core database-setup backend-service'

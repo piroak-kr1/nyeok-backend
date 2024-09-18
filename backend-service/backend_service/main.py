@@ -139,7 +139,7 @@ async def readiness():
 # Filter out /readiness
 class EndpointFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        return record.getMessage().find('"GET /readiness HTTP/1.1" 200') == -1
+        return record.getMessage().find('/readiness HTTP/1.1" 200') == -1
 
 
 logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
