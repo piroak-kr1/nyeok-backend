@@ -9,13 +9,7 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "command": "poetry",
-      "args": [
-        "run",
-        "bash",
-        "-c",
-        "\"cd app && fastapi dev\"",
-      ],
+      "command": "./scripts/run.sh",
       "group": {
         "kind": "test",
         "isDefault": true

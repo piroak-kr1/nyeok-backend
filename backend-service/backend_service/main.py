@@ -8,7 +8,7 @@ from sqlalchemy import Row, Select, select, cast
 from geoalchemy2.functions import ST_X, ST_Y, ST_Distance
 from sqlalchemy.orm import Session
 
-from .env import env
+from .env.AppEnv import env
 from .outbound import routes_api
 from .models import Place
 from .database_core import db
