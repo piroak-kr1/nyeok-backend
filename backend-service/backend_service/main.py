@@ -9,12 +9,10 @@ from geoalchemy2.functions import ST_X, ST_Y, ST_Distance
 from sqlalchemy.orm import Session
 
 from .env import env
-
-
 from .outbound import routes_api
 from .models import Place
-from nyeok_database_core import db
-from nyeok_database_core.tables import Place as DBPlace
+from .database_core import db
+from .database_core.tables import Place as DBPlace
 
 
 app = FastAPI()

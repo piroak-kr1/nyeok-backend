@@ -1,4 +1,4 @@
-# Argument: major, minor, patch
+# Argument: major, minor, patch, again
 
 # Change directory for subsequent poetry commands
 cd "./backend-service"
