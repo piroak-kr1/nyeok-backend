@@ -22,9 +22,6 @@ spec:
       labels:
         label: backend-pod
     spec:
-      initContainers:
-        - name: database-setup
-          image: kimkun07/nyeok-database-setup:0.2.2
       containers:
         - name: backend-container
           image: kimkun07/nyeok-backend:0.5.6

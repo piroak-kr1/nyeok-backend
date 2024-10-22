@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     label: cloudflare-deploy
-  name: cloudflared-deployment
+  name: cloudflare-deploy
   namespace: default
 spec:
   replicas: 1

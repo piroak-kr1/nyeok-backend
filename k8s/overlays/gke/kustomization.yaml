@@ -7,3 +7,21 @@ secretGenerator:
   - name: cloudflare-tunnel-secret
     envs:
       - ./.secret.cloudflare
+patches:
+  - target:
+      kind: Deployment # target All Deployments
+    patch: |- # Turn into Spot pod for cost savings
+      [
+        {
+          "op": "add",
+          "path": "/spec/template/spec/nodeSelector",
+          "value": {
+            "cloud.google.com/gke-spot": "true"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/spec/template/spec/terminationGracePeriodSeconds",
+          "value": 25
+        }
+      ]
